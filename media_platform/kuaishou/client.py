@@ -67,8 +67,8 @@ class KuaiShouClient(AbstractApiClient):
         self.graphql = KuaiShouGraphQL()
         
         self.android = {}
-        self.android.host = "https://az2-api.ksapisrv.com"
-        self.android.headers = {
+        self.android['host'] = "https://az2-api.ksapisrv.com"
+        self.android['headers'] = {
             'Host': 'az2-api.ksapisrv.com',
             'Connection': 'keep-alive',
             'Content-Length': '911',

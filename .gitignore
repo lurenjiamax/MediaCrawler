@@ -4,7 +4,6 @@ __pycache__/
 *$py.class
 .history/
 data2/
-/config/*
 # C extensions
 *.so
 

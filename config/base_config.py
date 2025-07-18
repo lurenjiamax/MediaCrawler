@@ -10,8 +10,8 @@
 
 
 # 基础配置
-PLATFORM = "ks"
-KEYWORDS = "玻璃钢防水,屋顶防水,玻璃钢屋顶,金刚橡胶屋顶,防水,金刚屋顶"  # 关键词搜索配置，以英文逗号分隔
+PLATFORM = "xhs"  # 平台，xhs | dy | ks | bili | wb | tieba | zhihu
+KEYWORDS = "编程副业,编程兼职"  # 关键词搜索配置，以英文逗号分隔
 LOGIN_TYPE = "qrcode"  # qrcode or phone or cookie
 COOKIES = ""
 CRAWLER_TYPE = (
