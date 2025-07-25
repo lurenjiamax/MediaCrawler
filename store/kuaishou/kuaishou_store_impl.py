@@ -104,7 +104,23 @@ class KuaishouCsvStoreImplement(AbstractStore):
 
 class KuaishouDbStoreImplement(AbstractStore):
     async def store_creator(self, creator: Dict):
-        pass
+        """
+        Kuaishou creator DB storage implementation
+        Args:
+            creator: creator dict
+
+        Returns:
+
+        """
+        from .kuaishou_store_sql import add_creator, query_creator_by_creator_id, update_creator_by_creator_id
+        creator["last_modify_ts"] = utils.get_current_timestamp()
+        creator_id = creator.get("user_id")
+        creator_detail: Dict = await query_creator_by_creator_id(creator_id=creator_id)
+        if not creator_detail:
+            creator["last_modify_ts"] = utils.get_current_timestamp()
+            await add_creator(creator_item=creator)
+        else:
+            await update_creator_by_creator_id(creator_id=creator_id, creator_item=creator)
 
     async def store_content(self, content_item: Dict):
         """

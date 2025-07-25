@@ -25,11 +25,33 @@ from tools import utils
 from .exception import DataFetchError
 from .graphql import KuaiShouGraphQL
 
+import hashlib
+
+SIG_SALT = b'772867c19925'
+
+# QParams: GET参数, PParams (POST用Form形式传的参)
+def Sig(QParams: dict, PParams: dict) -> str:
+    return hashlib.md5(''.join(sorted(f'{i[0]}={i[1]}' for i in sorted(QParams.items()) + sorted(PParams.items()))).encode() + SIG_SALT).hexdigest()
+def __NSTokensig(sig: str, ClientSalt: str) -> str:
+    return hashlib.sha256((sig + ClientSalt).encode()).hexdigest()
+
+# url3 = "https://api3.XXapisrv.com/rest/lightks/n/photo/playAuth/v1"
+# payload3 = {
+#     "photoId": f"{photo_id}",
+#     "cs": "false",
+#     "client_key": "3c2cd3f3",
+#     "os": "android",
+# }
+# params_str3 = sig_1.sort_params(params2, payload3)
+# sig_str3 = sig_1.make_sig(params_str3)
+# NS_sig3_str3 = sig_3.make_sig3(f"/rest/lightks/n/photo/playAuth/v1{sig_str3}")
+# params2["sig"] = sig_str3
+# params2["__NS_sig3"] = NS_sig3_str3
 
 class KuaiShouClient(AbstractApiClient):
     def __init__(
         self,
-        timeout=10,
+        timeout=60,
         proxies=None,
         *,
         headers: Dict[str, str],
@@ -43,6 +65,27 @@ class KuaiShouClient(AbstractApiClient):
         self.playwright_page = playwright_page
         self.cookie_dict = cookie_dict
         self.graphql = KuaiShouGraphQL()
+        
+        self.android = {}
+        self.android.host = "https://az2-api.ksapisrv.com"
+        self.android.headers = {
+            'Host': 'az2-api.ksapisrv.com',
+            'Connection': 'keep-alive',
+            'Content-Length': '911',
+            'X-REQUESTID': '175271697644040486',
+            'User-Agent': 'kwai-android aegon/4.19.1',
+            'Accept-Language': 'zh-cn',
+            'Cookie': 'kuaishou.api_st=Cg9rdWFpc2hvdS5hcGkuc3QSoAFBwMbvA6KPjUjUQ0N64CBgDacOY20hJNxu7-OqDE7zsMNMSCOPW3frAqIMQADl32tE_BW1Xx8LEP3YllKj-0dkkZFScgpMfG2bgZWlvKj8VesXe23udFXk9HffrHtHnydTYLG1TIpkbRsZrnsnUlXJh6hMPrsjYK38YKont72PV28t0GVavv7vbNl4ONWoR_ewmqsiCr4iTvsKiUDbvB9tGhLbpnOX2M1IRKpGGeQvLfAmAo8iIJjWJ9zecSeAKAqckbVpyT1iY2Yc0d_R4UAiu50R6nO3KAUwAQ;__NSWJ=;token=eaa6eeb817b84871bab76c251d9478b9-2975878723;region_ticket=RT_FDE0444808ADD191DA8176BFCC443494BA1D71F05A6D25DE7D73CEBC918FB6E82C4629EDA',
+            'ct-context': '{biz_name:ATTRIBUTION,error_occurred:false,sampled:true,sampled_on_error:true,segment_id:1524217112,service_name:CLIENT_TRACE,span_id:1,trace_id:My4xMzQzODc4Mzk5NDY5OTMyMzYwNy4yNjIzOS4xNzUyNzE2OTc2NDQxLjI=,upstream_error_occurred:false}',
+            'page-code': 'FEATURED_DETAIL',
+            'kaw': 'MDHkM+9FrbznSEAqyw6JYmWAbX7zYmh5BdXbI/C82jqqLDb50rL6A5Xty9qd+hVru646FNFGiGShrzCtbesIqNKinqX4K+Xjl4+tB30tCt4Ooik1wJGFgNYAJlsksJfB75Aw00OeB2HMusjZ2OLhjiaEYYRZ81gOUYchZVV+YVhYk0ma+hvQ184ehO+su1ku+8WOyqH5B8Jmt/cTEdlmdS3lTo6O/6Y/AA==',
+            'kas': '00478e77e181b38fba5fe51acc1ed68722',
+            'X-Ref-Page': 'PROFILE&FEATURED_DETAIL',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'X-Client-Info': 'model=CPH2581;os=Android;nqe-score=54;network=WIFI;signal-strength=4;'
+        }
+        
 
     async def request(self, method, url, **kwargs) -> Any:
         async with httpx.AsyncClient(proxies=self.proxies) as client:
@@ -234,7 +277,7 @@ class KuaiShouClient(AbstractApiClient):
             utils.logger.info(
                 f"[KuaiShouClient.get_comments_all_sub_comments] Crawling sub_comment mode is not enabled"
             )
-            return []
+            return 
 
         result = []
         for comment in comments:
@@ -265,11 +308,12 @@ class KuaiShouClient(AbstractApiClient):
 
     async def get_creator_info(self, user_id: str) -> Dict:
         """
-        eg: https://www.kuaishou.com/profile/3x4jtnbfter525a
+        eg: https://www.kuaishou.com/profile/3xfr2ac7e47dp26
         快手用户主页
         """
 
         visionProfile = await self.get_creator_profile(user_id)
+        visionProfile = visionProfile.get("visionProfile", {})
         return visionProfile.get("userProfile")
 
     async def get_all_videos_by_creator(

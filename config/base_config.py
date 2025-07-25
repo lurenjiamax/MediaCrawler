@@ -10,12 +10,12 @@
 
 
 # 基础配置
-PLATFORM = "xhs"  # 平台，xhs | dy | ks | bili | wb | tieba | zhihu
-KEYWORDS = "编程副业,编程兼职"  # 关键词搜索配置，以英文逗号分隔
+PLATFORM = "ks"
+KEYWORDS = "玻璃钢防水,屋顶防水,玻璃钢屋顶,金刚橡胶屋顶,防水,金刚屋顶"  # 关键词搜索配置，以英文逗号分隔
 LOGIN_TYPE = "qrcode"  # qrcode or phone or cookie
 COOKIES = ""
 CRAWLER_TYPE = (
-    "search"  # 爬取类型，search(关键词搜索) | detail(帖子详情)| creator(创作者主页数据)
+    "search", # 爬取类型，search(关键词搜索) | detail(帖子详情)| creator(创作者主页数据)
 )
 # 是否开启 IP 代理
 ENABLE_IP_PROXY = False
@@ -30,7 +30,7 @@ IP_PROXY_PROVIDER_NAME = "kuaidaili"
 # 设置False会打开一个浏览器
 # 小红书如果一直扫码登录不通过，打开浏览器手动过一下滑动验证码
 # 抖音如果一直提示失败，打开浏览器看下是否扫码登录之后出现了手机号验证，如果出现了手动过一下再试。
-HEADLESS = False
+HEADLESS = True
 
 # 是否保存登录状态
 SAVE_LOGIN_STATE = True
@@ -39,7 +39,7 @@ SAVE_LOGIN_STATE = True
 # 是否启用CDP模式 - 使用用户现有的Chrome/Edge浏览器进行爬取，提供更好的反检测能力
 # 启用后将自动检测并启动用户的Chrome/Edge浏览器，通过CDP协议进行控制
 # 这种方式使用真实的浏览器环境，包括用户的扩展、Cookie和设置，大大降低被检测的风险
-ENABLE_CDP_MODE = False
+ENABLE_CDP_MODE = True
 
 # CDP调试端口，用于与浏览器通信
 # 如果端口被占用，系统会自动尝试下一个可用端口
@@ -62,8 +62,8 @@ BROWSER_LAUNCH_TIMEOUT = 30
 # 设置为False可以保持浏览器运行，便于调试
 AUTO_CLOSE_BROWSER = True
 
-# 数据保存类型选项配置,支持四种类型：csv、db、json、sqlite, 最好保存到DB，有排重的功能。
-SAVE_DATA_OPTION = "json"  # csv or db or json or sqlite
+# 数据保存类型选项配置,支持三种类型：csv、db、json, 最好保存到DB，有排重的功能。
+SAVE_DATA_OPTION = "db"  # csv or db or json
 
 # 用户浏览器缓存的浏览器文件配置
 USER_DATA_DIR = "%s_user_data_dir"  # %s will be replaced by platform name
@@ -72,23 +72,118 @@ USER_DATA_DIR = "%s_user_data_dir"  # %s will be replaced by platform name
 START_PAGE = 1
 
 # 爬取视频/帖子的数量控制
-CRAWLER_MAX_NOTES_COUNT = 200
+CRAWLER_MAX_NOTES_COUNT = 2000
 
 # 并发爬虫数量控制
-MAX_CONCURRENCY_NUM = 1
+MAX_CONCURRENCY_NUM = 2
 
 # 是否开启爬图片模式, 默认不开启爬图片
 ENABLE_GET_IMAGES = False
 
 # 是否开启爬评论模式, 默认开启爬评论
-ENABLE_GET_COMMENTS = True
+ENABLE_GET_COMMENTS = False
 
 # 爬取一级评论的数量控制(单视频/帖子)
-CRAWLER_MAX_COMMENTS_COUNT_SINGLENOTES = 10
+CRAWLER_MAX_COMMENTS_COUNT_SINGLENOTES = 1
 
 # 是否开启爬二级评论模式, 默认不开启爬二级评论
 # 老版本项目使用了 db, 则需参考 schema/tables.sql line 287 增加表字段
 ENABLE_GET_SUB_COMMENTS = False
+
+# 已废弃⚠️⚠️⚠️指定小红书需要爬虫的笔记ID列表
+# 已废弃⚠️⚠️⚠️ 指定笔记ID笔记列表会因为缺少xsec_token和xsec_source参数导致爬取失败
+# XHS_SPECIFIED_ID_LIST = [
+#     "66fad51c000000001b0224b8",
+#     # ........................
+# ]
+
+# 指定小红书需要爬虫的笔记URL列表, 目前要携带xsec_token和xsec_source参数
+XHS_SPECIFIED_NOTE_URL_LIST = [
+    "https://www.xiaohongshu.com/explore/66fad51c000000001b0224b8?xsec_token=AB3rO-QopW5sgrJ41GwN01WCXh6yWPxjSoFI9D5JIMgKw=&xsec_source=pc_search"
+    # ........................
+]
+
+# 指定抖音需要爬取的ID列表
+DY_SPECIFIED_ID_LIST = [
+    "7280854932641664319",
+    "7202432992642387233",
+    # ........................
+]
+
+# 指定快手平台需要爬取的ID列表
+KS_SPECIFIED_ID_LIST = []
+
+# 指定B站平台需要爬取的视频bvid列表
+BILI_SPECIFIED_ID_LIST = [
+    "BV1d54y1g7db",
+    "BV1Sz4y1U77N",
+    "BV14Q4y1n7jz",
+    # ........................
+]
+
+# 指定微博平台需要爬取的帖子列表
+WEIBO_SPECIFIED_ID_LIST = [
+    "4982041758140155",
+    # ........................
+]
+
+# 指定weibo创作者ID列表
+WEIBO_CREATOR_ID_LIST = [
+    "5533390220",
+    # ........................
+]
+
+# 指定贴吧需要爬取的帖子列表
+TIEBA_SPECIFIED_ID_LIST = []
+
+# 指定贴吧名称列表，爬取该贴吧下的帖子
+TIEBA_NAME_LIST = [
+    # "盗墓笔记"
+]
+
+# 指定贴吧创作者URL列表
+TIEBA_CREATOR_URL_LIST = [
+    "https://tieba.baidu.com/home/main/?id=tb.1.7f139e2e.6CyEwxu3VJruH_-QqpCi6g&fr=frs",
+    # ........................
+]
+
+# 指定小红书创作者ID列表
+XHS_CREATOR_ID_LIST = [
+    "63e36c9a000000002703502b",
+    # ........................
+]
+
+# 指定Dy创作者ID列表(sec_id)
+DY_CREATOR_ID_LIST = [
+    "MS4wLjABAAAATJPY7LAlaa5X-c8uNdWkvz0jUGgpw4eeXIwu_8BhvqE",
+    # ........................
+]
+
+# 指定bili创作者ID列表(sec_id)
+BILI_CREATOR_ID_LIST = [
+    "20813884",
+    # ........................
+]
+
+# 指定快手创作者ID列表
+KS_CREATOR_ID_LIST = [
+    "3x4sm73aye7jq7i",
+    # ........................
+]
+
+
+# 指定知乎创作者主页url列表
+ZHIHU_CREATOR_URL_LIST = [
+    "https://www.zhihu.com/people/yd1234567",
+    # ........................
+]
+
+# 指定知乎需要爬取的帖子ID列表
+ZHIHU_SPECIFIED_ID_LIST = [
+    "https://www.zhihu.com/question/826896610/answer/4885821440",  # 回答
+    "https://zhuanlan.zhihu.com/p/673461588",  # 文章
+    "https://www.zhihu.com/zvideo/1539542068422144000",  # 视频
+]
 
 # 词云相关
 # 是否开启生成评论词云图

@@ -44,6 +44,7 @@ async def update_kuaishou_video(video_item: Dict):
     if not video_id:
         return
     user_info = video_item.get("author", {})
+    tags = video_item.get("tags", [])
     save_content_item = {
         "video_id": video_id,
         "video_type": str(video_item.get("type")),
@@ -60,6 +61,7 @@ async def update_kuaishou_video(video_item: Dict):
         "video_cover_url": photo_info.get("coverUrl", ""),
         "video_play_url": photo_info.get("photoUrl", ""),
         "source_keyword": source_keyword_var.get(),
+        "tags": str([tag.get("name", []) for tag in tags]) if tags else "",
     }
     utils.logger.info(
         f"[store.kuaishou.update_kuaishou_video] Kuaishou video id:{video_id}, title:{save_content_item.get('title')}")
@@ -102,7 +104,7 @@ async def save_creator(user_id: str, creator: Dict):
         'avatar': profile.get('headurl'),
         'desc': profile.get('user_text'),
         'ip_location': "",
-        'follows': ownerCount.get("follow"),
+        'follow': ownerCount.get("follow"),
         'fans': ownerCount.get("fan"),
         'interaction': ownerCount.get("photo_public"),
         "last_modify_ts": utils.get_current_timestamp(),

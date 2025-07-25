@@ -97,18 +97,19 @@ class KuaishouCrawler(AbstractCrawler):
                 )
 
             crawler_type_var.set(config.CRAWLER_TYPE)
-            if config.CRAWLER_TYPE == "search":
-                # Search for videos and retrieve their comment information.
-                await self.search()
-            elif config.CRAWLER_TYPE == "detail":
-                # Get the information and comments of the specified post
-                await self.get_specified_videos()
-            elif config.CRAWLER_TYPE == "creator":
-                # Get creator's information and their videos and comments
-                await self.get_creators_and_videos()
-            else:
-                pass
-
+            for oper in config.CRAWLER_TYPE:
+                oper = oper.strip()
+                if oper == "search":
+                    # Search for videos and retrieve their comment information.
+                    await self.search()
+                elif oper == "detail":
+                    # Get the information and comments of the specified post
+                    await self.get_specified_videos()
+                elif oper == "creator":
+                    # Get creator's information and their videos and comments
+                    await self.get_creators_and_videos()
+                else:
+                    pass
             utils.logger.info("[KuaishouCrawler.start] Kuaishou Crawler finished ...")
 
     async def search(self):
@@ -146,12 +147,22 @@ class KuaishouCrawler(AbstractCrawler):
                     )
                     continue
 
+                
                 vision_search_photo: Dict = videos_res.get("visionSearchPhoto")
                 if vision_search_photo.get("result") != 1:
                     utils.logger.error(
                         f"[KuaishouCrawler.search] search info by keyword:{keyword} not found data "
                     )
                     continue
+                author_ids = set([author.get("author").get("id") for author in vision_search_photo.get("feeds", [])])
+                origin_ks_creator_id_list = set(config.KS_CREATOR_ID_LIST.copy())
+                
+                new_creator_list = list(author_ids - ( author_ids & origin_ks_creator_id_list ))
+                utils.logger.info(
+                    f"[KuaishouCrawler.search] Found {len(new_creator_list)} new creators in search results"
+                )
+                config.KS_CREATOR_ID_LIST.extend(new_creator_list)
+                
                 search_session_id = vision_search_photo.get("searchSessionId", "")
                 for video_detail in vision_search_photo.get("feeds"):
                     video_id_list.append(video_detail.get("photo", {}).get("id"))
@@ -159,7 +170,8 @@ class KuaishouCrawler(AbstractCrawler):
 
                 # batch fetch video comments
                 page += 1
-                await self.batch_get_video_comments(video_id_list)
+                await self.batch_get_creator(new_creator_list)
+                # await self.get_creators_and_videos(new_creator_list)
 
     async def get_specified_videos(self):
         """Get the information and comments of the specified post"""
@@ -362,12 +374,25 @@ class KuaishouCrawler(AbstractCrawler):
                 chromium, playwright_proxy, user_agent, headless
             )
 
-    async def get_creators_and_videos(self) -> None:
+    async def batch_get_creator(self, creator_ids: List[str]) -> None:
+        """Batch get creators' information"""
+        utils.logger.info(f"[KuaiShouCrawler.batch_get_creator] Begin batch get kuaishou creators")
+        tasks = [self.get_creator(creator_id) for creator_id in creator_ids]
+        await asyncio.gather(*tasks)
+
+    async def get_creator(self, creator_id: str) -> None:
+        """Get creator's information"""
+        utils.logger.info(f"[KuaiShouCrawler.get_creator] Begin get kuaishou creator: {creator_id}")
+        creator_info: Dict = await self.ks_client.get_creator_info(user_id=creator_id)
+        if creator_info:
+            await kuaishou_store.save_creator(creator_id, creator=creator_info)
+
+    async def get_creators_and_videos(self, creator_ids: List[str]) -> None:
         """Get creator's videos and retrieve their comment information."""
         utils.logger.info(
             "[KuaiShouCrawler.get_creators_and_videos] Begin get kuaishou creators"
         )
-        for user_id in config.KS_CREATOR_ID_LIST:
+        for user_id in creator_ids:
             # get creator detail info from web html content
             createor_info: Dict = await self.ks_client.get_creator_info(user_id=user_id)
             if createor_info:
@@ -383,7 +408,7 @@ class KuaishouCrawler(AbstractCrawler):
             video_ids = [
                 video_item.get("photo", {}).get("id") for video_item in all_video_list
             ]
-            await self.batch_get_video_comments(video_ids)
+            # await self.batch_get_video_comments(video_ids)
 
     async def fetch_creator_video_detail(self, video_list: List[Dict]):
         """

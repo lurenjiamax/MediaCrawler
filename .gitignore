@@ -2,7 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+.history/
+data2/
+/config/*
 # C extensions
 *.so
 
@@ -165,7 +167,7 @@ cython_debug/
 /temp_image/
 /browser_data/
 /data/
-
+/docs/STZHONGS.TTF
 */.DS_Store
 .vscode
 /node_modules

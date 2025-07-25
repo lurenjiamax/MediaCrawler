@@ -207,52 +207,70 @@ CREATE TABLE `dy_creator`
 -- ----------------------------
 -- Table structure for kuaishou_video
 -- ----------------------------
-DROP TABLE IF EXISTS `kuaishou_video`;
-CREATE TABLE `kuaishou_video`
-(
-    `id`              int         NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-    `user_id`         varchar(64)  DEFAULT NULL COMMENT '用户ID',
-    `nickname`        varchar(64)  DEFAULT NULL COMMENT '用户昵称',
-    `avatar`          varchar(255) DEFAULT NULL COMMENT '用户头像地址',
-    `add_ts`          bigint      NOT NULL COMMENT '记录添加时间戳',
-    `last_modify_ts`  bigint      NOT NULL COMMENT '记录最后修改时间戳',
-    `video_id`        varchar(64) NOT NULL COMMENT '视频ID',
-    `video_type`      varchar(16) NOT NULL COMMENT '视频类型',
-    `title`           varchar(500) DEFAULT NULL COMMENT '视频标题',
-    `desc`            longtext COMMENT '视频描述',
-    `create_time`     bigint      NOT NULL COMMENT '视频发布时间戳',
-    `liked_count`     varchar(16)  DEFAULT NULL COMMENT '视频点赞数',
-    `viewd_count`     varchar(16)  DEFAULT NULL COMMENT '视频浏览数量',
-    `video_url`       varchar(512) DEFAULT NULL COMMENT '视频详情URL',
-    `video_cover_url` varchar(512) DEFAULT NULL COMMENT '视频封面图 URL',
-    `video_play_url`  varchar(512) DEFAULT NULL COMMENT '视频播放 URL',
-    PRIMARY KEY (`id`),
-    KEY               `idx_kuaishou_vi_video_i_c5c6a6` (`video_id`),
-    KEY               `idx_kuaishou_vi_create__a10dee` (`create_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='快手视频';
+ DROP TABLE IF EXISTS `kuaishou_video`;
+ CREATE TABLE `kuaishou_video`
+ (
+     `id`              int         NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+     `user_id`         varchar(64)  DEFAULT NULL COMMENT '用户ID',
+     `nickname`        varchar(64)  DEFAULT NULL COMMENT '用户昵称',
+     `avatar`          varchar(255) DEFAULT NULL COMMENT '用户头像地址',
+     `add_ts`          bigint      NOT NULL COMMENT '记录添加时间戳',
+     `last_modify_ts`  bigint      NOT NULL COMMENT '记录最后修改时间戳',
+     `video_id`        varchar(64) NOT NULL COMMENT '视频ID',
+     `video_type`      varchar(16) NOT NULL COMMENT '视频类型',
+     `title`           varchar(500) DEFAULT NULL COMMENT '视频标题',
+     `desc`            longtext COMMENT '视频描述',
+     `create_time`     bigint      NOT NULL COMMENT '视频发布时间戳',
+     `liked_count`     varchar(16)  DEFAULT NULL COMMENT '视频点赞数',
+     `viewd_count`     varchar(16)  DEFAULT NULL COMMENT '视频浏览数量',
+     `video_url`       varchar(512) DEFAULT NULL COMMENT '视频详情URL',
+     `video_cover_url` varchar(512) DEFAULT NULL COMMENT '视频封面图 URL',
+     `video_play_url`  varchar(512) DEFAULT NULL COMMENT '视频播放 URL',
+     `tags`            varchar(512) DEFAULT NULL COMMENT '视频标签列表',
+     PRIMARY KEY (`id`),
+     KEY               `idx_kuaishou_vi_video_i_c5c6a6` (`video_id`),
+     KEY               `idx_kuaishou_vi_create__a10dee` (`create_time`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='快手视频';
 
 -- ----------------------------
 -- Table structure for kuaishou_video_comment
 -- ----------------------------
-DROP TABLE IF EXISTS `kuaishou_video_comment`;
-CREATE TABLE `kuaishou_video_comment`
+ DROP TABLE IF EXISTS `kuaishou_video_comment`;
+ CREATE TABLE `kuaishou_video_comment`
+ (
+     `id`                int         NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+     `user_id`           varchar(64)  DEFAULT NULL COMMENT '用户ID',
+     `nickname`          varchar(64)  DEFAULT NULL COMMENT '用户昵称',
+     `avatar`            varchar(255) DEFAULT NULL COMMENT '用户头像地址',
+     `add_ts`            bigint      NOT NULL COMMENT '记录添加时间戳',
+     `last_modify_ts`    bigint      NOT NULL COMMENT '记录最后修改时间戳',
+     `comment_id`        varchar(64) NOT NULL COMMENT '评论ID',
+     `video_id`          varchar(64) NOT NULL COMMENT '视频ID',
+     `content`           longtext COMMENT '评论内容',
+     `create_time`       bigint      NOT NULL COMMENT '评论时间戳',
+     `sub_comment_count` varchar(16) NOT NULL COMMENT '评论回复数',
+     PRIMARY KEY (`id`),
+     KEY                 `idx_kuaishou_vi_comment_ed48fa` (`comment_id`),
+     KEY                 `idx_kuaishou_vi_video_i_e50914` (`video_id`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='快手视频评论';
+
+DROP TABLE IF EXISTS `kuaishou_creator`;
+CREATE TABLE `kuaishou_creator`
 (
-    `id`                int         NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-    `user_id`           varchar(64)  DEFAULT NULL COMMENT '用户ID',
+    `user_id`           varchar(64) NOT NULL COMMENT '用户ID',
     `nickname`          varchar(64)  DEFAULT NULL COMMENT '用户昵称',
     `avatar`            varchar(255) DEFAULT NULL COMMENT '用户头像地址',
-    `add_ts`            bigint      NOT NULL COMMENT '记录添加时间戳',
-    `last_modify_ts`    bigint      NOT NULL COMMENT '记录最后修改时间戳',
-    `comment_id`        varchar(64) NOT NULL COMMENT '评论ID',
-    `video_id`          varchar(64) NOT NULL COMMENT '视频ID',
-    `content`           longtext COMMENT '评论内容',
-    `create_time`       bigint      NOT NULL COMMENT '评论时间戳',
-    `sub_comment_count` varchar(16) NOT NULL COMMENT '评论回复数',
-    PRIMARY KEY (`id`),
-    KEY                 `idx_kuaishou_vi_comment_ed48fa` (`comment_id`),
-    KEY                 `idx_kuaishou_vi_video_i_e50914` (`video_id`)
+    `gender`           varchar(12)  DEFAULT NULL COMMENT '用户性别',
+    `ip_location`      varchar(255) DEFAULT NULL COMMENT '用户IP地址',
+    `follow`           varchar(16)  DEFAULT NULL COMMENT '关注数',
+    `fans`             varchar(16)  DEFAULT NULL COMMENT '粉丝数',
+    `interaction`      varchar(16)  DEFAULT NULL COMMENT '获赞数',
+    `last_modify_ts`  bigint      NOT NULL COMMENT '记录最后修改时间戳',
+    `desc`             longtext COMMENT '用户描述',
+  `phone` varchar(32) DEFAULT NULL COMMENT '电话',
+  `location` varchar(255) DEFAULT NULL COMMENT '位置',
+    PRIMARY KEY (`user_id`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='快手视频评论';
-
 
 -- ----------------------------
 -- Table structure for weibo_note

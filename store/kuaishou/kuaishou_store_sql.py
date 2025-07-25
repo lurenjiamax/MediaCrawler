@@ -51,6 +51,48 @@ async def add_new_content(content_item: Dict) -> int:
     last_row_id: int = await async_db_conn.item_to_table("kuaishou_video", content_item)
     return last_row_id
 
+async def add_creator(creator_item: Dict) -> int:
+    """
+    新增一条创作者记录
+    Args:
+        creator_item:
+
+    Returns:
+
+    """
+    async_db_conn: AsyncMysqlDB = media_crawler_db_var.get()
+    last_row_id: int = await async_db_conn.item_to_table("kuaishou_creator", creator_item)
+    return last_row_id
+
+async def query_creator_by_creator_id(creator_id: str) -> Dict:
+    """
+    查询一条创作者记录
+    Args:
+        creator_id:
+
+    Returns:
+
+    """
+    async_db_conn: AsyncMysqlDB = media_crawler_db_var.get()
+    sql: str = f"select * from kuaishou_creator where user_id = '{creator_id}'"
+    rows: List[Dict] = await async_db_conn.query(sql)
+    if len(rows) > 0:
+        return rows[0]
+    return dict()
+
+async def update_creator_by_creator_id(creator_id: str, creator_item: Dict) -> int:
+    """
+    更新一条创作者记录
+    Args:
+        creator_id:
+        creator_item:
+
+    Returns:
+
+    """
+    async_db_conn: AsyncMysqlDB = media_crawler_db_var.get()
+    effect_row: int = await async_db_conn.update_table("kuaishou_creator", creator_item, "user_id", creator_id)
+    return effect_row
 
 async def update_content_by_content_id(content_id: str, content_item: Dict) -> int:
     """
