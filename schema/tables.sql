@@ -224,8 +224,8 @@ CREATE TABLE `dy_creator`
      `liked_count`     varchar(16)  DEFAULT NULL COMMENT '视频点赞数',
      `viewd_count`     varchar(16)  DEFAULT NULL COMMENT '视频浏览数量',
      `video_url`       varchar(512) DEFAULT NULL COMMENT '视频详情URL',
-     `video_cover_url` varchar(512) DEFAULT NULL COMMENT '视频封面图 URL',
-     `video_play_url`  varchar(512) DEFAULT NULL COMMENT '视频播放 URL',
+     `video_cover_url` varchar(1024) DEFAULT NULL COMMENT '视频封面图 URL',
+     `video_play_url`  varchar(1024) DEFAULT NULL COMMENT '视频播放 URL',
      `tags`            varchar(512) DEFAULT NULL COMMENT '视频标签列表',
      PRIMARY KEY (`id`),
      KEY               `idx_kuaishou_vi_video_i_c5c6a6` (`video_id`),
@@ -270,7 +270,7 @@ CREATE TABLE `kuaishou_creator`
   `phone` varchar(32) DEFAULT NULL COMMENT '电话',
   `location` varchar(255) DEFAULT NULL COMMENT '位置',
     PRIMARY KEY (`user_id`),
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='快手视频评论';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='快手博主信息';
 
 -- ----------------------------
 -- Table structure for weibo_note

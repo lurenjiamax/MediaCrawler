@@ -226,7 +226,8 @@ CREATE TABLE kuaishou_video (
     video_url TEXT DEFAULT NULL,
     video_cover_url TEXT DEFAULT NULL,
     video_play_url TEXT DEFAULT NULL,
-    source_keyword TEXT DEFAULT ''
+    source_keyword TEXT DEFAULT NULL,
+    tags TEXT DEFAULT ''
 );
 
 CREATE INDEX idx_kuaishou_vi_video_i_c5c6a6 ON kuaishou_video(video_id);
@@ -252,6 +253,23 @@ CREATE TABLE kuaishou_video_comment (
 
 CREATE INDEX idx_kuaishou_vi_comment_ed48fa ON kuaishou_video_comment(comment_id);
 CREATE INDEX idx_kuaishou_vi_video_i_e50914 ON kuaishou_video_comment(video_id);
+
+DROP TABLE IF EXISTS `kuaishou_creator`;
+CREATE TABLE kuaishou_creator (
+  user_id TEXT NOT NULL PRIMARY KEY,
+  nickname TEXT,
+  avatar TEXT,
+  gender TEXT,
+  ip_location TEXT,
+  follow TEXT,
+  fans TEXT,
+  interaction TEXT,
+  last_modify_ts INTEGER NOT NULL,
+  desc TEXT,
+  phone TEXT,
+  location TEXT
+);
+
 
 -- ----------------------------
 -- Table structure for weibo_note

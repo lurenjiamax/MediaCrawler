@@ -67,6 +67,8 @@ async def init_db():
 
     """
     utils.logger.info("[init_db] start init mediacrawler db connect object")
+    utils.logger.info("[init_db] try to create db schema")
+    await init_table_schema(config.SAVE_DATA_OPTION)
     if config.SAVE_DATA_OPTION == "sqlite":
         await init_sqlite_db()
         utils.logger.info("[init_db] end init sqlite db connect object")
@@ -107,10 +109,11 @@ async def init_table_schema(db_type: str = None):
     
     if db_type == "sqlite":
         utils.logger.info("[init_table_schema] begin init sqlite table schema ...")
-        
         # 检查并删除可能存在的损坏数据库文件
         import os
         if os.path.exists(config.SQLITE_DB_PATH):
+            # 先不进行后续操作
+            return
             try:
                 # 尝试删除现有的数据库文件
                 os.remove(config.SQLITE_DB_PATH)
@@ -136,11 +139,19 @@ async def init_table_schema(db_type: str = None):
         utils.logger.info("[init_table_schema] begin init mysql table schema ...")
         await init_mediacrawler_db()
         async_db_obj: AsyncMysqlDB = media_crawler_db_var.get()
-        async with aiofiles.open("schema/tables.sql", mode="r", encoding="utf-8") as f:
-            schema_sql = await f.read()
-            await async_db_obj.execute(schema_sql)
-            utils.logger.info("[init_table_schema] mysql table schema init successful")
-            await close()
+        # 检查 table `kuaishou_video` 是否存在
+        try: 
+            await async_db_obj.execute("SELECT * FROM kuaishou_video LIMIT 1")
+            return
+        except aiomysql.Error as e:
+            async with aiofiles.open("schema/tables.sql", mode="r", encoding="utf-8") as f:
+                schema_sql = await f.read()
+                await async_db_obj.execute(schema_sql)
+                utils.logger.info("[init_table_schema] mysql table schema init successful")
+                await close()
+        except Exception as e:
+            utils.logger.error(f"[init_table_schema] 初始化 MySQL 数据库表结构失败: {str(e)}")
+            raise e
     else:
         utils.logger.error(f"[init_table_schema] 不支持的数据库类型: {db_type}")
         raise ValueError(f"不支持的数据库类型: {db_type}，支持的类型: sqlite, mysql")

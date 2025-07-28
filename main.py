@@ -24,9 +24,6 @@ from media_platform.tieba import TieBaCrawler
 from media_platform.weibo import WeiboCrawler
 from media_platform.xhs import XiaoHongShuCrawler
 from media_platform.zhihu import ZhihuCrawler
-import debugpy
-debugpy.listen(5678)  # 启动调试器，监听5678端口
-# debugpy.wait_for_client()  # 等待调试器连接，取消注释以在启动时等待调试器连接
 
 class CrawlerFactory:
     CRAWLERS = {
